@@ -3,11 +3,15 @@
 set -e
 
 if [ "$1" = 'test' ]; then
-  exec su-exec testcl jtcl /opt/test/test_jtcl_irule.tcl
-
-elif [ "$1" = 'test_irule' ]; then
-  cd /opt/test
-  exec su-exec testcl jtcl /opt/test/test_simple_irule.tcl
+  if [ -f 'tests/generate_irules.py' ]; then
+    su-exec testcl python3 tests/generate_irules.py
+  fi
+  cd tests
+  if [ -f 'generate_classfiles.py' ]; then
+    su-exec testcl python3 generate_classfiles.py
+  fi
+  export ARGS=`echo $2 | sed -e 's/^tests\///'`
+  exec su-exec testcl jtcl "$ARGS"
 
 elif [ "$1" = 'makemeroot' ]; then
   exec ash

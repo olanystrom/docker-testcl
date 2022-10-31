@@ -34,7 +34,7 @@ COPY --from=build /opt/ /opt/
 
     ### sed -i 's/http\:\/\/dl-cdn.alpinelinux.org/https\:\/\/alpine.global.ssl.fastly.net/g' /etc/apk/repositories ;\
 RUN set -euxo pipefail ;\
-    apk add --no-cache --update dumb-init su-exec ;\
+    apk add --no-cache --update python3 dumb-init su-exec ;\
     mv /opt/entrypoint.sh /usr/local/bin ;\
     adduser -s /bin/ash -u 1000 -D -h /app testcl ;\
     chmod -R 755 /opt/TesTcl /opt/jtcl
