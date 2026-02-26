@@ -1,7 +1,7 @@
-FROM alpine:latest as build
+FROM alpine:latest AS build
 
-ENV JTCL_VERSION 2.8.0
-ENV TESTCL_VERSION 1.0.14
+ENV JTCL_VERSION=2.8.0
+ENV TESTCL_VERSION=1.0.14
 
 RUN set -euxo pipefail ;\
     apk add --no-cache --update unzip
@@ -23,18 +23,17 @@ RUN ["chmod", "+x", "/opt/entrypoint.sh"]
 COPY ./test/ /opt/test
 
 
-FROM adoptopenjdk/openjdk11-openj9:alpine-slim
+FROM eclipse-temurin:11-jdk-alpine
 
 LABEL maintainer="Johannes Denninger"
 
 ENV TCLLIBPATH=/opt/TesTcl
-ENV PATH /opt/jtcl:/opt/test:/app:$PATH
+ENV PATH=/opt/jtcl:/opt/test:/app:$PATH
 
 COPY --from=build /opt/ /opt/
 
-    ### sed -i 's/http\:\/\/dl-cdn.alpinelinux.org/https\:\/\/alpine.global.ssl.fastly.net/g' /etc/apk/repositories ;\
 RUN set -euxo pipefail ;\
-    apk add --no-cache --update dumb-init su-exec ;\
+    apk add --no-cache --update dumb-init su-exec python3 py3-jinja2 py3-yaml;\
     mv /opt/entrypoint.sh /usr/local/bin ;\
     adduser -s /bin/ash -u 1000 -D -h /app testcl ;\
     chmod -R 755 /opt/TesTcl /opt/jtcl
